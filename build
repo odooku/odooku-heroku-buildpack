@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+echo "Creating build environment (heroku-16)..."
+docker build --pull -t odooku-build-heroku-16 .
+
+if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ];
+then
+  echo "Make sure \$AWS_ACCESS_KEY_ID and \$AWS_SECRET_ACCESS_KEY."
+  exit 1
+fi
+
+docker run \
+  -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+  -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+  odooku-build-heroku-16 \
+  bob deploy runtimes/python-2.7.13

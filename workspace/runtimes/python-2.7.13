@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Build Path: /app/.heroku/odoo/
+
+OUT_PREFIX=$1
+
+PYTHON_VERSION=2.7.13
+
+echo "-----> Building Python ${PYTHON_VERSION}"
+curl -L https://python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz | tar xz
+pushd Python-${PYTHON_VERSION}
+./configure --prefix=${OUT_PREFIX}
+make -s
+make install -s
+popd
+
+PYTHONHOME=${OUT_PREFIX} ${OUT_PREFIX}/bin/python -m ensurepip

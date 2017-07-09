@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+ARCHIVE="https://odooku.s3.amazonaws.com/heroku-16/libraries/vendor/sasl.tar.gz"
+
+if [ ! -f ".heroku/vendor/lib/libsasl2.so" ]; then
+  puts-step "Bootstrapping Cyrus SASL"
+  mkdir -p .heroku/vendor
+  curl -s $ARCHIVE 2> /dev/null | tar zxv -C .heroku/vendor &> /dev/null
+fi
+
+export CFLAGS="$CFLAGS -I$(pwd)/.heroku/vendor/include/sasl"

@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+
+# Fail fast and fail hard.
+set -eo pipefail
+
+[ "$BUILDPACK_XTRACE" ] && set -o xtrace
+
+# Paths.
+BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
+ROOT_DIR=$(dirname $BIN_DIR)
+LIB_DIR=$ROOT_DIR/lib
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+# Sanitizing environment variables.
+unset GIT_DIR PYTHONHOME PYTHONPATH LD_LIBRARY_PATH LIBRARY_PATH
+unset RECEIVE_DATA RUN_KEY BUILD_INFO DEPLOY LOG_TOKEN DYNO
+unset CYTOKINE_LOG_FILE GEM_PATH
+unset CFLAGS LDFLAGS
+
+# Common Problem Warnings
+export WARNINGS_LOG=$(mktemp)
+
+# Syntax sugar.
+source $LIB_DIR/utils
+
+# Set up outputs under new context
+PROFILE_PATH="$BUILD_DIR/.profile.d/odooku.sh"
+
+# Create paths
+mkdir -p $BUILD_DIR/.heroku
+mkdir -p $(dirname $PROFILE_PATH)
+
+# Restore cache
+cp -a $CACHE_DIR/.heroku/. $BUILD_DIR/.heroku/ &> /dev/null || true
+
+# We"ll need to send these statics to other scripts we `source`.
+export ROOT_DIR BUILD_DIR CACHE_DIR BIN_DIR LIB_DIR PROFILE_PATH
+
+# Prepend proper environment variables for Python use.
+O_PATH=$PATH
+O_LIBRARY_PATH=$LIBRARY_PATH
+O_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export PATH=$BUILD_DIR/.heroku/python/bin:$BUILD_DIR/.heroku/vendor/bin:$PATH
+export PYTHONHOME=$BUILD_DIR/.heroku/python
+export PYTHONUNBUFFERED=1
+export LANG=en_US.UTF-8
+export C_INCLUDE_PATH=$BUILD_DIR/.heroku/vendor/include:$BUILD_DIR/.heroku/vendor/include:$BUILD_DIR/.heroku/python/include:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=$BUILD_DIR/.heroku/vendor/include:$BUILD_DIR/.heroku/vendor/include:$BUILD_DIR/.heroku/python/include:$CPLUS_INCLUDE_PATH
+export LIBRARY_PATH=$BUILD_DIR/.heroku/vendor/lib:$BUILD_DIR/.heroku/vendor/lib:$BUILD_DIR/.heroku/python/lib:$LIBRARY_PATH
+export LD_LIBRARY_PATH=$BUILD_DIR/.heroku/vendor/lib:$BUILD_DIR/.heroku/vendor/lib:$BUILD_DIR/.heroku/python/lib:$LD_LIBRARY_PATH
+export CFLAGS=-I$BUILD_DIR/.heroku/vendor/include $CFLAGS
+export LDFLAGS=-L$BUILD_DIR/.heroku/vendor/lib $LDFLAGS
+export PKG_CONFIG_PATH=$BUILD_DIR/.heroku/vendor/lib/pkg-config:$BUILD_DIR/.heroku/vendor/lib/pkg-config:$BUILD_DIR/.heroku/python/lib/pkg-config:$PKG_CONFIG_PATH
+
+
+# Enter BUILD_DIR
+pushd $BUILD_DIR > /dev/null
+
+# Install runtimes
+source $LIB_DIR/steps/runtimes/python
+
+# shebang for pip and other scripts point to:
+#!/app/.heroku/python//bin/python
+mkdir -p /app/.heroku/python/bin
+ln -s $BUILD_DIR/.heroku/python/bin/python /app/.heroku/python/bin/python
+
+# Install libraries
+source $LIB_DIR/steps/libraries/sasl
+source $LIB_DIR/steps/libraries/openldap
+source $LIB_DIR/steps/libraries/lessc
+source $LIB_DIR/steps/libraries/wkhtmltopdf
+
+# Install requirements
+source $LIB_DIR/steps/pip-install
+source $LIB_DIR/steps/pip-uninstall
+
+# Leave
+popd > /dev/null
+
+# Reset
+export PATH=$O_PATH
+export LIBRARY_PATH=$O_LIBRARY_PATH
+export LD_LIBRARY_PATH=$O_LD_LIBRARY_PATH
+
+# Create .profile script for application runtime environment variables.
+set-env PATH "$HOME/.heroku/python/bin:$HOME/.heroku/vendor/bin:$PATH"
+set-env PYTHONUNBUFFERED true
+set-env PYTHONHOME "$HOME/.heroku/python"
+set-env LIBRARY_PATH "$HOME/.heroku/vendor/lib:$HOME/.heroku/python/lib:$LIBRARY_PATH"
+set-env LD_LIBRARY_PATH "$HOME/.heroku/vendor/lib:$HOME/.heroku/python/lib:$LD_LIBRARY_PATH"
+set-default-env LANG en_US.UTF-8
+set-default-env PYTHONHASHSEED random
+set-default-env PYTHONPATH "$HOME/"
+set-default-env ODOOKU_ADDONS "$HOME/addons"
+
+# Update cache
+rm -rf $CACHE_DIR/.heroku &> /dev/null || true
+mkdir -p $CACHE_DIR/.heroku
+cp -a $BUILD_DIR/.heroku/. $CACHE_DIR/.heroku/

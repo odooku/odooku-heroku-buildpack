@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Build Path: /app/.heroku/vendor/
+
+OUT_PREFIX=$1
+
+NODEJS_VERSION=4.4.7
+
+echo "-----> Building NodeJS ${NODEJS_VERSION}"
+curl -L https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-x64.tar.xz | tar xJ
+node-v${NODEJS_VERSION}-linux-x64/bin/npm --prefix=${OUT_PREFIX} install -g less
+cp -a node-v${NODEJS_VERSION}-linux-x64/. ${OUT_PREFIX}

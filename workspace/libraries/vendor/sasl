@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Build Path: /app/.heroku/vendor/
+
+OUT_PREFIX=$1
+
+
+CYRUSSASL_VERSION=2.1.25
+
+
+echo "-----> Building Cyrus Sasl ${CYRUSSASL_VERSION}"
+curl -O ftp://ftp.andrew.cmu.edu/pub/cyrus-mail/cyrus-sasl-${CYRUSSASL_VERSION}.tar.gz
+tar -zxvf cyrus-sasl-${CYRUSSASL_VERSION}.tar.gz
+pushd cyrus-sasl-${CYRUSSASL_VERSION}
+./configure --prefix=${OUT_PREFIX}
+make -s
+make install -s
+popd
