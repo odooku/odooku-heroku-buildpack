@@ -3,14 +3,26 @@
 echo "Creating build environment (heroku-16)..."
 docker build --pull -t odooku-build-heroku-16 .
 
-if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ];
+if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ] ||  [ -z "$S3_BUCKET" ];
 then
-  echo "Make sure \$AWS_ACCESS_KEY_ID and \$AWS_SECRET_ACCESS_KEY."
+  echo "Make sure \$AWS_ACCESS_KEY_ID, \$AWS_SECRET_ACCESS_KEY and \$S3_BUCKET are set."
   exit 1
 fi
 
-docker run \
-  -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
-  -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
-  odooku-build-heroku-16 \
-  bob deploy runtimes/python-2.7.13
+declare -a targets=(
+  "libraries/vendor/lessc"
+  "libraries/vendor/openldap"
+  "libraries/vendor/sasl"
+  "libraries/vendor/wkhtmltopdf"
+  "runtimes/python-2.7.13"
+)
+
+for target in "${targets[@]}"; do
+  docker run \
+    -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+    -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+    -e S3_BUCKET="$S3_BUCKET" \
+    -e S3_PREFIX=heroku-16 \
+    odooku-build-heroku-16 \
+    bob deploy "$target"
+done
