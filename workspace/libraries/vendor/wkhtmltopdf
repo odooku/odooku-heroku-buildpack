@@ -4,9 +4,9 @@
 OUT_PREFIX=$1
 
 
-WKHTMLTOPDF_VERSION=0.12.1
+WKHTMLTOPDF_VERSION=0.12.4
 
 echo "-----> Building wkhtmltopdf ${WKHTMLTOPDF_VERSION}"
-curl -L https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOPDF_VERSION}/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-trusty-amd64.deb > wkhtmltox.deb
+curl -L https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOPDF_VERSION}/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-generic-amd64.deb > wkhtmltox.deb
 dpkg -x wkhtmltox.deb .
 cp -a ./usr/local/. ${OUT_PREFIX}

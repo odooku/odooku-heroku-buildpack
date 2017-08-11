@@ -1,0 +1,13 @@
+dist: trusty
+sudo: required
+language: bash
+
+services:
+  - docker
+
+env:
+  global:
+    - S3_BUCKET=odooku
+
+script:
+  - ./build

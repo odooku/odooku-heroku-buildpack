@@ -9,6 +9,7 @@ set -eo pipefail
 BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 ROOT_DIR=$(dirname $BIN_DIR)
 LIB_DIR=$ROOT_DIR/lib
+VENDOR_DIR=$ROOT_DIR/vendor
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
@@ -42,7 +43,7 @@ export ROOT_DIR BUILD_DIR CACHE_DIR BIN_DIR LIB_DIR PROFILE_PATH
 O_PATH=$PATH
 O_LIBRARY_PATH=$LIBRARY_PATH
 O_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-export PATH=$BUILD_DIR/.heroku/python/bin:$BUILD_DIR/.heroku/vendor/bin:$PATH
+export PATH=$BUILD_DIR/.heroku/python/bin:$BUILD_DIR/.heroku/vendor/bin:$VENDOR_DIR:$PATH
 export PYTHONHOME=$BUILD_DIR/.heroku/python
 export PYTHONUNBUFFERED=1
 export LANG=en_US.UTF-8

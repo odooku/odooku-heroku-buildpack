@@ -24,5 +24,5 @@ for target in "${targets[@]}"; do
     -e S3_BUCKET="$S3_BUCKET" \
     -e S3_PREFIX=heroku-16 \
     odooku-build-heroku-16 \
-    bob deploy "$target"
+    bob deploy --overwrite "$target"
 done
