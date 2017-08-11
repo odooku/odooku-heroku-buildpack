@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-ARCHIVE="https://odooku.s3.amazonaws.com/heroku-16/runtimes/python-2.7.12.tar.gz"
+ARCHIVE="https://odooku.s3.amazonaws.com/heroku-16/runtimes/python-2.7.13.tar.gz"
 
 if [ ! -f ".heroku/odoo/bin/python" ]; then
   puts-step "Bootstrapping python"
