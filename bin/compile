@@ -94,7 +94,6 @@ set-env LD_LIBRARY_PATH "$HOME/.heroku/vendor/lib:$HOME/.heroku/python/lib:$LD_L
 set-default-env LANG en_US.UTF-8
 set-default-env PYTHONHASHSEED random
 set-default-env PYTHONPATH "$HOME/"
-set-default-env ODOOKU_ADDONS "$HOME/addons"
 
 # Update cache
 rm -rf $CACHE_DIR/.heroku &> /dev/null || true
