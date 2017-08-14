@@ -11,14 +11,13 @@ fi
 
 declare -a targets=(
   "libraries/vendor/lessc"
-  "libraries/vendor/openldap"
-  "libraries/vendor/sasl"
   "libraries/vendor/wkhtmltopdf"
   "runtimes/python-2.7.13"
 )
 
 for target in "${targets[@]}"; do
   docker run \
+    --rm \
     -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
     -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
     -e S3_BUCKET="$S3_BUCKET" \

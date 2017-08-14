@@ -68,8 +68,6 @@ mkdir -p /app/.heroku/python/bin
 ln -s $BUILD_DIR/.heroku/python/bin/python /app/.heroku/python/bin/python
 
 # Install libraries
-source $LIB_DIR/steps/libraries/sasl
-source $LIB_DIR/steps/libraries/openldap
 source $LIB_DIR/steps/libraries/lessc
 source $LIB_DIR/steps/libraries/wkhtmltopdf
 

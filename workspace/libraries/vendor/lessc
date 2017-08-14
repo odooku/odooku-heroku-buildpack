@@ -9,7 +9,7 @@ LESS_VERSION=2.7.2
 echo "-----> Building NodeJS ${NODEJS_VERSION}"
 curl -L https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-x64.tar.xz | tar xJ
 
-pushd Python-${PYTHON_VERSION}
+pushd node-v${NODEJS_VERSION}-linux-x64
 echo "-----> Building LESS ${LESS_VERSION}"
 PATH="$PATH:bin/" bin/npm --prefix=${OUT_PREFIX} install -g less@${LESS_VERSION}
 popd
