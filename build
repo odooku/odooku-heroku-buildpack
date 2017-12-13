@@ -12,7 +12,7 @@ fi
 declare -a targets=(
   "libraries/vendor/lessc"
   "libraries/vendor/wkhtmltopdf"
-  "runtimes/python-2.7.13"
+  "runtimes/python-3.6.3"
 )
 
 for target in "${targets[@]}"; do
