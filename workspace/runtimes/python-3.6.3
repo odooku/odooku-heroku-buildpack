@@ -13,4 +13,5 @@ make -s
 make install -s
 popd
 
-PYTHONHOME=${OUT_PREFIX} ${OUT_PREFIX}/bin/python -m ensurepip
+ln $OUT_PREFIX/bin/python3 $OUT_PREFIX/bin/python
+ln $OUT_PREFIX/bin/pip3 $OUT_PREFIX/bin/pip
